@@ -37,12 +37,15 @@ public class ProtectPages implements Filter {
     // configured. 
     private FilterConfig filterConfig = null;
     
-    public ProtectPages() {
+    public ProtectPages() 
+    {
+    
     }    
     
-    private void doBeforeProcessing(ServletRequest request, ServletResponse response)
-            throws IOException, ServletException {
-        if (debug) {
+    private void doBeforeProcessing(ServletRequest request, ServletResponse response) throws IOException, ServletException 
+    {
+        if (debug) 
+        {
             log("ProtectPages:DoBeforeProcessing");
         }
 
@@ -68,9 +71,10 @@ public class ProtectPages implements Filter {
          */
     }    
     
-    private void doAfterProcessing(ServletRequest request, ServletResponse response)
-            throws IOException, ServletException {
-        if (debug) {
+    private void doAfterProcessing(ServletRequest request, ServletResponse response) throws IOException, ServletException 
+    {
+        if (debug) 
+        {
             log("ProtectPages:DoAfterProcessing");
         }
 

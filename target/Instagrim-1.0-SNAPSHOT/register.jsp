@@ -5,6 +5,24 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<%
+
+String registerError = null;
+registerError = (String)request.getAttribute("registerError");
+String registerErrorShow = "";
+
+if(registerError != null)
+{
+    registerErrorShow = "style=\"display:initial\"";
+}
+else
+{
+    registerError = "";
+}
+
+%>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -23,11 +41,12 @@
                 <li><a href="/Instagrim/Images/majed">Sample Images</a></li>
             </ul>
         </nav>
-       
+        
         <article>
             <h3>Register as user</h3>
             <form method="POST"  action="Register">
                 <ul>
+                    <p id="loginError" <%= registerErrorShow%>><%= registerError%><br></p>
                     <li>User Name <input type="text" name="username"></li>
                     <li>Password <input type="password" name="password"></li>
                 </ul>

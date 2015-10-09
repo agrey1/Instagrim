@@ -25,17 +25,17 @@ import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
  *
  * @author Administrator
  */
-@WebServlet(name = "Login", urlPatterns = {"/Login"})
+@WebServlet(name = "Login", urlPatterns = {"/Login", "/Login/*"})
 public class Login extends HttpServlet 
 {
     Cluster cluster=null;
-
+    
     public void init(ServletConfig config) throws ServletException 
     {
         // TODO Auto-generated method stub
         cluster = CassandraHosts.getCluster();
     }
-
+    
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -46,20 +46,17 @@ public class Login extends HttpServlet
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-    {
-        String username=request.getParameter("username");
-        String password=request.getParameter("password");
+    {   
+        User user = new User(request);
+        user.setCluster(cluster);
         
-        User us=new User();
-        us.setCluster(cluster);
-        boolean isValid = us.IsValidUser(username, password);
-        HttpSession session=request.getSession();
+        HttpSession session = request.getSession();
         System.out.println("Session in servlet "+session);
-        if (isValid)
+        if(user.IsValidUser())
         {
-            LoggedIn lg= new LoggedIn();
+            LoggedIn lg = new LoggedIn();
             lg.setLogedin();
-            lg.setUsername(username);
+            lg.setUsername(user.getUsername());
             //request.setAttribute("LoggedIn", lg);
             
             session.setAttribute("LoggedIn", lg);
@@ -72,7 +69,7 @@ public class Login extends HttpServlet
             response.sendRedirect("/Instagrim/login.jsp");
         }
     }
-
+    
     /**
      * Returns a short description of the servlet.
      *

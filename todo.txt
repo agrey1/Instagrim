@@ -1,0 +1,14 @@
+Error/response codes
+404 Not found page
+Exception handling
+Username restrictions
+Add confirm password field
+
+Registration process - validation, check for existing, etc.
+
+Changes:
+Added web.xml file with the <url-pattern> settings required.
+Added "Remember Me" functionality to login form.
+Logout page now redirects to the home page after 3 seconds.
+Login error messages added.
+Registration form validation and errors.

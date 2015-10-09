@@ -7,6 +7,8 @@
 package uk.ac.dundee.computing.aec.instagrim.servlets;
 
 import com.datastax.driver.core.Cluster;
+import exceptions.UserException;
+import exceptions.UserExistsException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
@@ -26,13 +28,26 @@ import uk.ac.dundee.computing.aec.instagrim.models.User;
 @WebServlet(name = "Register", urlPatterns = {"/Register"})
 public class Register extends HttpServlet 
 {
-    Cluster cluster=null;
+    Cluster cluster = null;
     public void init(ServletConfig config) throws ServletException 
     {
         // TODO Auto-generated method stub
         cluster = CassandraHosts.getCluster();
     }
-
+    
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        request.getRequestDispatcher("register.jsp").forward(request, response);
+    }
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -44,15 +59,20 @@ public class Register extends HttpServlet
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-    {
-        String username=request.getParameter("username");
-        String password=request.getParameter("password");
+    {   
+        User user = new User(request);
+        user.setCluster(cluster);
         
-        User us = new User();
-        us.setCluster(cluster);
-        us.RegisterUser(username, password);
-        
-	response.sendRedirect("/Instagrim");
+        try
+        {
+            user.RegisterUser();
+            response.sendRedirect("/Instagrim");
+        }
+        catch(UserException e)
+        {
+            request.setAttribute("registerError", e.getMessage());
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+        }
     }
 
     /**

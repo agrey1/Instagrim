@@ -1,0 +1,72 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 06-Oct-2015, 16:06:32
+    Author     : Alexander Grey
+*/
+
+html
+{
+    background-color: #191818;
+    color: #FFFFFF;
+}
+
+body
+{
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+}
+
+a
+{
+    color: #08B3F5;
+    text-decoration: none;
+}
+
+a:hover
+{
+    color: #3DC3F7;
+    text-decoration: underline;
+}
+
+#outerContainer
+{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+#wrapper
+{
+    width: 660px;
+    height: 375px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#wrapper img
+{
+    float:left;
+}
+
+#loginContainer
+{
+    width: 300px;
+    float:left;
+    margin-left:10px;
+    border-radius:5px;
+    text-align:center;
+    
+    background-color: #484848;
+}
+
+#loginError
+{
+    color: #FF1010;
+    display:none;
+}

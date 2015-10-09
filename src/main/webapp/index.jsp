@@ -4,52 +4,68 @@
     Author     : Administrator
 --%>
 
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="uk.ac.dundee.computing.aec.instagrim.stores.*" %>
+
+<%
+
+String username = (String)request.getAttribute("username");
+String checked = "checked";
+
+if(username == null) 
+{
+    username = "";
+    checked = "";
+}
+
+String loginFailed = null;
+loginFailed = (String)request.getAttribute("loginFailed");
+
+if(loginFailed != null)
+{
+    if(loginFailed.equals("1"))
+    {
+        loginFailed = "style=\"display:initial\"";
+    }
+}
+else
+{
+    loginFailed = "";
+}
+
+%>
+
 <!DOCTYPE html>
+
 <html>
     <head>
         <title>Instagrim</title>
-        <link rel="stylesheet" type="text/css" href="Styles.css" />
+        <link rel="stylesheet" type="text/css" href="/Instagrim/css/home.css" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
+    
     <body>
-        <header>
-            <h1>InstaGrim!</h1>
-            <h2>Your world in Black and White</h2>
-        </header>
-        <nav>
-            <ul>
-                <li><a href="upload.jsp">Upload</a></li>
-		
-                <%
-                LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-                if (lg != null)
-                {
-                    String UserName = lg.getUsername();
-                    if (lg.getlogedin())
-                    {
-                        %>
-                        <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
-                        <li><a href="/Instagrim/LogOut">Log Out</a></li>
-                        <%
-                    }
-                }
-                else
-                {
-                    %>
-                    <li><a href="register.jsp">Register</a></li>
-                    <li><a href="login.jsp">Login</a></li>   
-                    <% 
-                } %>
-            </ul>
-        </nav>
-        <footer>
-            <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
-                <li>&COPY; Andy C</li>
-            </ul>
-        </footer>
+        <div id="outerContainer">
+            <div id="wrapper">
+                <img src="/Instagrim/images/tree.jpg" alt="tree"/>
+                <div id="loginContainer">
+                    <h1>Instagrim</h1>
+                    <form action="/Instagrim" method="post">
+                        <p id="loginError" <%= loginFailed%>>Incorrect username or password, please try again.<br></p>
+                        <label for="username">Username</label>
+                        <input type="text" name="username" value="<%= username%>"/><br>
+                        
+                        <label for="password">Password</label>
+                        <input type="password" name="password"/><br>
+                        
+                        <input type="submit" name="login" value="Login"/>
+                        <input type="checkbox" name="remember" <%= checked%>/>
+                        <label for="remember">Remember me</label>
+                        
+                        <p>No account? Click <a href="/Instagrim/Register">here</a> to register.</p>
+                    </form>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
