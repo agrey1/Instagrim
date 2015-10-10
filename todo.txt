@@ -1,14 +1,26 @@
+Profile settings (name, avatar etc)
+Image comments/ratings/likes
+Add confirm password field
+Password validation
+Security/access (Must be logged into upload, etc)
+Maximum image file size
+
 Error/response codes
 404 Not found page
 Exception handling
-Username restrictions
-Add confirm password field
+Duplicate code: error function
+Remove unused imports
+Do something if the database is down
 
-Registration process - validation, check for existing, etc.
+Added very basic CSS for the profile page.
+Profile page:
+	Removed image border.
+	Thumbnails now have a maximum and minimum size but are otherwise not resized.
+After uploading an image, the user is now redirected to their profile page.
+Image and Profile servlet separated.
 
-Changes:
-Added web.xml file with the <url-pattern> settings required.
-Added "Remember Me" functionality to login form.
-Logout page now redirects to the home page after 3 seconds.
-Login error messages added.
-Registration form validation and errors.
+Image comments:
+	instagrim.pics table structure altered
+	Created PicComment store class
+	Implemented code to retrieve comments
+	Began working on JSP code to display comments

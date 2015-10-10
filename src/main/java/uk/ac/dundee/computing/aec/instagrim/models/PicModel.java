@@ -28,6 +28,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
@@ -36,25 +40,30 @@ import org.imgscalr.Scalr.Method;
 
 import uk.ac.dundee.computing.aec.instagrim.lib.*;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
+import uk.ac.dundee.computing.aec.instagrim.stores.PicComment;
 //import uk.ac.dundee.computing.aec.stores.TweetStore;
 
-public class PicModel {
-
+public class PicModel 
+{
     Cluster cluster;
-
-    public void PicModel() {
+    
+    public void PicModel() 
+    {
 
     }
-
-    public void setCluster(Cluster cluster) {
+    
+    public void setCluster(Cluster cluster) 
+    {
         this.cluster = cluster;
     }
-
-    public void insertPic(byte[] b, String type, String name, String user) {
-        try {
+    
+    public void insertPic(byte[] b, String type, String name, String user) 
+    {
+        try 
+        {
             Convertors convertor = new Convertors();
 
-            String types[]=Convertors.SplitFiletype(type);
+            String types[] = Convertors.SplitFiletype(type);
             ByteBuffer buffer = ByteBuffer.wrap(b);
             int length = b.length;
             java.util.UUID picid = convertor.getTimeUUID();
@@ -62,17 +71,17 @@ public class PicModel {
             //The following is a quick and dirty way of doing this, will fill the disk quickly !
             Boolean success = (new File("/var/tmp/instagrim/")).mkdirs();
             FileOutputStream output = new FileOutputStream(new File("/var/tmp/instagrim/" + picid));
-
+            
             output.write(b);
-            byte []  thumbb = picresize(picid.toString(),types[1]);
-            int thumblength= thumbb.length;
-            ByteBuffer thumbbuf=ByteBuffer.wrap(thumbb);
+            byte[]  thumbb = picresize(picid.toString(),types[1]);
+            int thumblength = thumbb.length;
+            ByteBuffer thumbbuf = ByteBuffer.wrap(thumbb);
             byte[] processedb = picdecolour(picid.toString(),types[1]);
-            ByteBuffer processedbuf=ByteBuffer.wrap(processedb);
-            int processedlength=processedb.length;
+            ByteBuffer processedbuf = ByteBuffer.wrap(processedb);
+            int processedlength = processedb.length;
             Session session = cluster.connect("instagrim");
 
-            PreparedStatement psInsertPic = session.prepare("insert into pics ( picid, image,thumb,processed, user, interaction_time,imagelength,thumblength,processedlength,type,name) values(?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement psInsertPic = session.prepare("insert into pics ( picid, image, thumb, processed, user, interaction_time,imagelength,thumblength,processedlength,type,name) values(?,?,?,?,?,?,?,?,?,?,?)");
             PreparedStatement psInsertPicToUser = session.prepare("insert into userpiclist ( picid, user, pic_added) values(?,?,?)");
             BoundStatement bsInsertPic = new BoundStatement(psInsertPic);
             BoundStatement bsInsertPicToUser = new BoundStatement(psInsertPicToUser);
@@ -82,13 +91,17 @@ public class PicModel {
             session.execute(bsInsertPicToUser.bind(picid, user, DateAdded));
             session.close();
 
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) 
+        {
             System.out.println("Error --> " + ex);
         }
     }
-
-    public byte[] picresize(String picid,String type) {
-        try {
+    
+    public byte[] picresize(String picid, String type) 
+    {
+        try 
+        {
             BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrim/" + picid));
             BufferedImage thumbnail = createThumbnail(BI);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -98,14 +111,19 @@ public class PicModel {
             byte[] imageInByte = baos.toByteArray();
             baos.close();
             return imageInByte;
-        } catch (IOException et) {
+        } 
+        catch (IOException et) 
+        {
 
         }
+        
         return null;
     }
     
-    public byte[] picdecolour(String picid,String type) {
-        try {
+    public byte[] picdecolour(String picid,String type) 
+    {
+        try 
+        {
             BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrim/" + picid));
             BufferedImage processed = createProcessed(BI);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -114,103 +132,183 @@ public class PicModel {
             byte[] imageInByte = baos.toByteArray();
             baos.close();
             return imageInByte;
-        } catch (IOException et) {
-
         }
+        catch (IOException et) 
+        {
+            
+        }
+        
         return null;
     }
-
-    public static BufferedImage createThumbnail(BufferedImage img) {
-        img = resize(img, Method.SPEED, 250, OP_ANTIALIAS, OP_GRAYSCALE);
-        // Let's add a little border before we return result.
-        return pad(img, 2);
+    
+    public static BufferedImage createThumbnail(BufferedImage img) 
+    {
+        //Maximum and minimum thumbnail size
+        int width = img.getWidth();
+        int height = img.getHeight();
+        
+        if(width > 600) width = 600;
+        else if(width < 100) width = 100;
+        
+        if(height > 750) height = 750;
+        else if(height < 100) height = 100;
+        
+        return resize(img, Method.SPEED, width, height, OP_ANTIALIAS, OP_GRAYSCALE);
     }
     
-   public static BufferedImage createProcessed(BufferedImage img) {
-        int Width=img.getWidth()-1;
-        img = resize(img, Method.SPEED, Width, OP_ANTIALIAS, OP_GRAYSCALE);
-        return pad(img, 4);
+    public static BufferedImage createProcessed(BufferedImage img) 
+    {
+        int Width = img.getWidth()-1;
+        return resize(img, Method.SPEED, Width, OP_ANTIALIAS, OP_GRAYSCALE);
     }
-   
-    public java.util.LinkedList<Pic> getPicsForUser(String User) {
+    
+    /**
+     * Gets a list of picture IDs for a given user
+     * @param User The user whose pictures we wish to get
+     * @return A LinkedList of picture IDs.
+     */
+    public java.util.LinkedList<Pic> getPicsForUser(String User)
+    {
         java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
         Session session = cluster.connect("instagrim");
-        PreparedStatement ps = session.prepare("select picid from userpiclist where user =?");
+        PreparedStatement ps = session.prepare("select picid from userpiclist where user = ?");
         ResultSet rs = null;
         BoundStatement boundStatement = new BoundStatement(ps);
-        rs = session.execute( // this is where the query is executed
-                boundStatement.bind( // here you are binding the 'boundStatement'
-                        User));
-        if (rs.isExhausted()) {
+        
+        rs = session.execute(boundStatement.bind(User));
+        
+        if (rs.isExhausted()) 
+        {
             System.out.println("No Images returned");
             return null;
-        } else {
-            for (Row row : rs) {
+        } 
+        else 
+        {
+            for (Row row : rs) 
+            {
                 Pic pic = new Pic();
                 java.util.UUID UUID = row.getUUID("picid");
                 System.out.println("UUID" + UUID.toString());
                 pic.setUUID(UUID);
+                
+                try
+                {
+                    pic.setPicComments(getComments(UUID)); 
+                }
+                catch(Exception e)
+                {
+                    
+                }
+                
                 Pics.add(pic);
-
             }
         }
+        
         return Pics;
     }
-
-    public Pic getPic(int image_type, java.util.UUID picid) {
+    
+    public Pic getPic(int image_type, java.util.UUID picid) 
+    {
         Session session = cluster.connect("instagrim");
         ByteBuffer bImage = null;
         String type = null;
         int length = 0;
-        try {
+        
+        try 
+        {
             Convertors convertor = new Convertors();
             ResultSet rs = null;
             PreparedStatement ps = null;
          
-            if (image_type == Convertors.DISPLAY_IMAGE) {
-                
-                ps = session.prepare("select image,imagelength,type from pics where picid =?");
-            } else if (image_type == Convertors.DISPLAY_THUMB) {
-                ps = session.prepare("select thumb,imagelength,thumblength,type from pics where picid =?");
-            } else if (image_type == Convertors.DISPLAY_PROCESSED) {
-                ps = session.prepare("select processed,processedlength,type from pics where picid =?");
+            if(image_type == Convertors.DISPLAY_IMAGE) 
+            {
+                ps = session.prepare("select image, imagelength, type from pics where picid = ?");
+            } 
+            else if(image_type == Convertors.DISPLAY_THUMB) 
+            {
+                ps = session.prepare("select thumb, imagelength, thumblength, type from pics where picid = ?");
+            } 
+            else if(image_type == Convertors.DISPLAY_PROCESSED) 
+            {
+                ps = session.prepare("select processed, processedlength, type from pics where picid = ?");
             }
+            
             BoundStatement boundStatement = new BoundStatement(ps);
-            rs = session.execute( // this is where the query is executed
-                    boundStatement.bind( // here you are binding the 'boundStatement'
-                            picid));
-
-            if (rs.isExhausted()) {
+            rs = session.execute(boundStatement.bind(picid));
+            
+            if (rs.isExhausted()) 
+            {
                 System.out.println("No Images returned");
                 return null;
-            } else {
-                for (Row row : rs) {
-                    if (image_type == Convertors.DISPLAY_IMAGE) {
+            } 
+            else 
+            {
+                for (Row row : rs) 
+                {
+                    if (image_type == Convertors.DISPLAY_IMAGE) 
+                    {
                         bImage = row.getBytes("image");
                         length = row.getInt("imagelength");
-                    } else if (image_type == Convertors.DISPLAY_THUMB) {
+                    } 
+                    else if (image_type == Convertors.DISPLAY_THUMB) 
+                    {
                         bImage = row.getBytes("thumb");
                         length = row.getInt("thumblength");
-                
-                    } else if (image_type == Convertors.DISPLAY_PROCESSED) {
+                    } 
+                    else if (image_type == Convertors.DISPLAY_PROCESSED) 
+                    {
                         bImage = row.getBytes("processed");
                         length = row.getInt("processedlength");
                     }
                     
                     type = row.getString("type");
-
                 }
             }
-        } catch (Exception et) {
+        }
+        catch (Exception et) 
+        {
             System.out.println("Can't get Pic" + et);
             return null;
         }
+        
         session.close();
         Pic p = new Pic();
         p.setPic(bImage, length, type);
-
+        
         return p;
-
     }
-
+    
+    public LinkedList<PicComment> getComments(java.util.UUID picid) throws ParseException
+    {
+        Session session = cluster.connect("instagrim");
+        
+        PreparedStatement psInsertPic = session.prepare("SELECT comments FROM pics WHERE picid = ?");
+        BoundStatement bsInsertPic = new BoundStatement(psInsertPic);
+        
+        ResultSet result = session.execute(bsInsertPic.bind(picid));
+        session.close();
+        
+        LinkedList<PicComment> picComments = null;
+        
+        if(result.isExhausted() == true)
+        {
+            //No comments
+            System.out.println("No comments");
+        }
+        else
+        {
+            //There will only be one row in the result, get the comment
+            for(String commentData : result.one().getSet("comments", String.class))
+            {
+                if(commentData != null)
+                {
+                    if(picComments == null) picComments = new LinkedList<>();
+                    
+                    picComments.add(new PicComment(commentData));
+                }
+            }
+        }
+        
+        return picComments;
+    }
 }

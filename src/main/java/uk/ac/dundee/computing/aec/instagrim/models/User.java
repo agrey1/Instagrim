@@ -120,7 +120,7 @@ public class User
         BoundStatement boundStatement = new BoundStatement(ps);
         ResultSet result = session.execute(boundStatement.bind(this.username));
         
-        for(Row row : result)
+        if(result.isExhausted() == false)
         {
             throw new UserExistsException("An account already exists for " + this.username + ".");
         }

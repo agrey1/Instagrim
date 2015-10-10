@@ -9,15 +9,15 @@ public final class Keyspaces
 {
     public Keyspaces() 
     {
-
+        
     }
-
+    
     public static void SetUpKeySpaces(Cluster c) 
     {
-        try 
+        try
         {
             //Add some keyspaces here
-            String createkeyspace = "create keyspace if not exists instagrim  WITH replication = {'class':'SimpleStrategy', 'replication_factor':1}";
+            String createkeyspace = "CREATE KEYSPACE if not exists instagrim WITH replication = {'class':'SimpleStrategy', 'replication_factor':1}";
             String CreatePicTable = "CREATE TABLE if not exists instagrim.Pics ("
                     + " user varchar,"
                     + " picid uuid, "
@@ -28,9 +28,10 @@ public final class Keyspaces
                     + " processed blob,"
                     + " imagelength int,"
                     + " thumblength int,"
-                    + "  processedlength int,"
+                    + " processedlength int,"
                     + " type  varchar,"
                     + " name  varchar,"
+                    + " comments set<text>,\n"
                     + " PRIMARY KEY (picid)"
                     + ")";
             String Createuserpiclist = "CREATE TABLE if not exists instagrim.userpiclist (\n"

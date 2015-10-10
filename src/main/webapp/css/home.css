@@ -8,12 +8,6 @@ and open the template in the editor.
     Author     : Alexander Grey
 */
 
-html
-{
-    background-color: #191818;
-    color: #FFFFFF;
-}
-
 body
 {
     display: table;
@@ -21,18 +15,6 @@ body
     height: 100%;
     width: 100%;
     margin: 0px;
-}
-
-a
-{
-    color: #08B3F5;
-    text-decoration: none;
-}
-
-a:hover
-{
-    color: #3DC3F7;
-    text-decoration: underline;
 }
 
 #outerContainer

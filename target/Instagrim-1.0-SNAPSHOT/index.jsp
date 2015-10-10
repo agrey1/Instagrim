@@ -41,6 +41,7 @@ else
     <head>
         <title>Instagrim</title>
         <link rel="stylesheet" type="text/css" href="/Instagrim/css/home.css" />
+        <link rel="stylesheet" type="text/css" href="/Instagrim/css/footer.css" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     

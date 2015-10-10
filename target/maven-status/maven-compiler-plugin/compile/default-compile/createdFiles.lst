@@ -2,8 +2,10 @@ uk\ac\dundee\computing\aec\instagrim\servlets\Home.class
 uk\ac\dundee\computing\aec\instagrim\lib\Convertors.class
 uk\ac\dundee\computing\aec\instagrim\stores\Pic.class
 uk\ac\dundee\computing\aec\instagrim\servlets\Login.class
+uk\ac\dundee\computing\aec\instagrim\stores\PicComment.class
 uk\ac\dundee\computing\aec\instagrim\servlets\Register.class
 uk\ac\dundee\computing\aec\instagrin\filters\ProtectPages.class
+uk\ac\dundee\computing\aec\instagrim\servlets\Image.class
 uk\ac\dundee\computing\aec\instagrim\servlets\Profile.class
 uk\ac\dundee\computing\aec\instagrim\servlets\LogOut.class
 uk\ac\dundee\computing\aec\instagrim\models\PicModel.class

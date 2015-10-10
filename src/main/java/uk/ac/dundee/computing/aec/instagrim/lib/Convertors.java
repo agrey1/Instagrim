@@ -137,7 +137,8 @@ public final class Convertors {
         return args;
     }
     
-    public static String[] SplitRequestPath(HttpServletRequest request) {
+    public static String[] SplitRequestPath(HttpServletRequest request) 
+    {
         String args[] = null;
 
         StringTokenizer st = SplitString(request.getRequestURI());
@@ -145,15 +146,20 @@ public final class Convertors {
 		//Lets assume the number is the last argument
 
         int argv = 0;
-        while (st.hasMoreTokens()) {;
+        while (st.hasMoreTokens()) 
+        {;
             args[argv] = new String();
 
             args[argv] = st.nextToken();
-            try {
+            
+            try 
+            {
                 //System.out.println("String was "+URLDecoder.decode(args[argv],"UTF-8"));
                 args[argv] = URLDecoder.decode(args[argv], "UTF-8");
 
-            } catch (Exception et) {
+            } 
+            catch (Exception et) 
+            {
                 System.out.println("Bad URL Encoding" + args[argv]);
             }
             argv++;
@@ -164,9 +170,9 @@ public final class Convertors {
         return args;
     }
 
-    private static StringTokenizer SplitString(String str) {
+    private static StringTokenizer SplitString(String str) 
+    {
         return new StringTokenizer(str, "/");
-
     }
 
 }

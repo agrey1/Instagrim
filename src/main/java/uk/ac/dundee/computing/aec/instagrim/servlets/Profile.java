@@ -33,17 +33,12 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
  */
 @WebServlet(urlPatterns = 
 {
-    "/Image",
-    "/Image/*",
-    "/Thumb/*",
     "/Profile",
     "/Profile/*"
 })
-@MultipartConfig
 
 public class Profile extends HttpServlet 
 {
-    private static final long serialVersionUID = 1L;
     private Cluster cluster;
     private HashMap CommandsMap = new HashMap();
     
@@ -53,10 +48,7 @@ public class Profile extends HttpServlet
     public Profile() 
     {
         super();
-        // TODO Auto-generated constructor stub
-        CommandsMap.put("Image", 1);
-        CommandsMap.put("Profile", 2);
-        CommandsMap.put("Thumb", 3);
+        CommandsMap.put("Profile", 1);
     }
 
     public void init(ServletConfig config) throws ServletException 
@@ -88,16 +80,14 @@ public class Profile extends HttpServlet
         switch (command) 
         {
             case 1:
-                DisplayImage(Convertors.DISPLAY_PROCESSED,args[2], response);
-                break;
-            case 2:
+            {
                 DisplayImageList(args[2], request, response);
                 break;
-            case 3:
-                DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response);
-                break;
+            }
             default:
+            {
                 error("Bad Operator", response);
+            }
         }
     }
 
@@ -106,33 +96,10 @@ public class Profile extends HttpServlet
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
         java.util.LinkedList<Pic> lsPics = tm.getPicsForUser(User);
-        RequestDispatcher rd = request.getRequestDispatcher("/UsersPics.jsp");
+        RequestDispatcher rd = request.getRequestDispatcher("/profile.jsp");
         request.setAttribute("Pics", lsPics);
+        
         rd.forward(request, response);
-    }
-
-    private void DisplayImage(int type,String Image, HttpServletResponse response) throws ServletException, IOException 
-    {
-        PicModel tm = new PicModel();
-        tm.setCluster(cluster);
-        
-        Pic p = tm.getPic(type,java.util.UUID.fromString(Image));
-        
-        OutputStream out = response.getOutputStream();
-
-        response.setContentType(p.getType());
-        response.setContentLength(p.getLength());
-        //out.write(Profile);
-        InputStream is = new ByteArrayInputStream(p.getBytes());
-        BufferedInputStream input = new BufferedInputStream(is);
-        byte[] buffer = new byte[8192];
-        
-        for (int length = 0; (length = input.read(buffer)) > 0;) 
-        {
-            out.write(buffer, 0, length);
-        }
-        
-        out.close();
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
@@ -153,36 +120,8 @@ public class Profile extends HttpServlet
             //The user has just logged in or has refreshed the page (Re-submitting the form)
             DisplayImageList(username, request, response);
         }
-        else
-        {
-            for (Part part : request.getParts()) 
-            {
-                System.out.println("Part Name " + part.getName());
-
-                String type = part.getContentType();
-                String filename = part.getSubmittedFileName();
-
-                InputStream is = request.getPart(part.getName()).getInputStream();
-                int i = is.available();
-
-                if (i > 0) 
-                {
-                    byte[] b = new byte[i + 1];
-                    is.read(b);
-                    System.out.println("Length : " + b.length);
-                    PicModel tm = new PicModel();
-                    tm.setCluster(cluster);
-                    tm.insertPic(b, type, filename, username);
-
-                    is.close();
-                }
-
-                RequestDispatcher rd = request.getRequestDispatcher("/upload.jsp");
-                rd.forward(request, response);
-            }
-        }
     }
-
+    
     private void error(String mess, HttpServletResponse response) throws ServletException, IOException 
     {
         PrintWriter out = null;
@@ -190,6 +129,7 @@ public class Profile extends HttpServlet
         out.println("<h1>You have an error in your input</h1>");
         out.println("<h2>" + mess + "</h2>");
         out.close();
+        
         return;
     }
 }
