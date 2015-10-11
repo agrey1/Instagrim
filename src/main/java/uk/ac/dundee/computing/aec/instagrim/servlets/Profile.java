@@ -57,11 +57,7 @@ public class Profile extends HttpServlet
         cluster = CassandraHosts.getCluster();
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     * response)
-     */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
         // TODO Auto-generated method stub
         String args[] = Convertors.SplitRequestPath(request);
@@ -77,11 +73,11 @@ public class Profile extends HttpServlet
             return;
         }
         
-        switch (command) 
+        switch (command)
         {
             case 1:
             {
-                DisplayImageList(args[2], request, response);
+                displayProfile(args[2], request, response);
                 break;
             }
             default:
@@ -90,8 +86,8 @@ public class Profile extends HttpServlet
             }
         }
     }
-
-    private void DisplayImageList(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    
+    private void displayProfile(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
@@ -99,27 +95,31 @@ public class Profile extends HttpServlet
         RequestDispatcher rd = request.getRequestDispatcher("/profile.jsp");
         request.setAttribute("Pics", lsPics);
         
-        rd.forward(request, response);
-    }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-    {
         HttpSession session = request.getSession();
         LoggedIn lg = (LoggedIn)session.getAttribute("LoggedIn");
-        
-        String username = "";
-        if (lg.getlogedin())
+        boolean loggedIn = false;
+        if(lg != null)
         {
-            username = lg.getUsername();
+            loggedIn = lg.getlogedin();
         }
         
-        System.out.println(request.getContentType());
+        request.setAttribute("loggedIn", loggedIn);
         
-        if (request.getContentType() != null && request.getContentType().toLowerCase().equals("application/x-www-form-urlencoded"))
-        {
-            //The user has just logged in or has refreshed the page (Re-submitting the form)
-            DisplayImageList(username, request, response);
-        }
+        rd.forward(request, response);
+    }
+    
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+     * response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    {
+        processRequest(request, response);
+    }
+    
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    {
+        processRequest(request, response);
     }
     
     private void error(String mess, HttpServletResponse response) throws ServletException, IOException 

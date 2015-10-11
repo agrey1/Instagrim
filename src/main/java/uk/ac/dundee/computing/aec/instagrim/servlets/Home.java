@@ -21,9 +21,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
+import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
 import uk.ac.dundee.computing.aec.instagrim.models.User;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
+import uk.ac.dundee.computing.aec.instagrim.stores.PicComment;
 
 /**
  *
@@ -78,7 +80,6 @@ public class Home extends HttpServlet
         if(profile.length() > 1) //The user is requesting a profile
         {
             profile = profile.substring(1, profile.length());
-            //profile = profile.substring(0, profile.indexOf("/"));
             
             request.getRequestDispatcher("/Profile/" + profile).forward(request, response);
         }
@@ -98,6 +99,25 @@ public class Home extends HttpServlet
             {
                 rememberMe(request);
                 
+                //When referred from a profile page, the user should be sent back to this profile.
+                String referrer = request.getHeader("referer");
+                
+                if(referrer != null)
+                {
+                    String[] referrerParts = referrer.split("/");
+                    referrer = referrerParts[referrerParts.length - 1];
+                    
+                    if(referrer.equals("logout.jsp"))
+                    {
+                        referrer = "";
+                    }
+                }
+                else
+                {
+                    referrer = "";
+                }
+                
+                request.setAttribute("referrer", referrer);
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
             }
         }
@@ -114,47 +134,80 @@ public class Home extends HttpServlet
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
-        System.out.println("Home POST");
-        
-        user.setUsername(request.getParameter("username"));
-        user.setPassword(request.getParameter("password"));
-        user.setCluster(cluster);
-        
-        HttpSession session = request.getSession(true);
-        System.out.println("BEFORE LOGIN " + session);
-        
-        if(user.IsValidUser())
+        String profile = null;
+        String args[] = Convertors.SplitRequestPath(request);
+        if(args.length > 1)
         {
-            //Successful login
+            profile = args[1];
+        }
+        
+        String commentText = request.getParameter("comment");
+        if(commentText != null) //The user is posting a comment
+        {
+            HttpSession session = request.getSession();
+            LoggedIn lg = (LoggedIn)session.getAttribute("LoggedIn");
             
-            LoggedIn lg = new LoggedIn();
-            lg.setLogedin();
-            lg.setUsername(user.getUsername());
-            System.out.println("Successful login");
-            //request.setAttribute("LoggedIn", lg);
-            session.setAttribute("LoggedIn", lg);
-            System.out.println("LOGGED IN " + session);
-            System.out.println("Username: " + user.getUsername());
-            
-            if(request.getParameter("remember") != null)
+            if(lg != null)
             {
-                user.setCookie(response); //Remember me
-            }
-            else
-            {
-                //Remove any existing cookies if the user does not wish to be remembered
-                user.removeCookie(request, response);
+                if(lg.getlogedin() == true)
+                {
+                    PicComment comment = new PicComment(lg.getUsername(), commentText);
+                    PicModel picModel = new PicModel(cluster);
+                    picModel.addComment(java.util.UUID.fromString(request.getParameter("picid")), comment);
+                }
             }
             
-            request.getRequestDispatcher("/Profile/" + user.getUsername()).forward(request, response);
+            request.getRequestDispatcher("/Profile/" + profile).forward(request, response);
         }
         else
         {
-            //Login failed
-            request.setAttribute("loginFailed", "1");
-            rememberMe(request);
-            request.getRequestDispatcher("index.jsp").forward(request, response);
-            //response.sendRedirect("/");
+            System.out.println("Home POST");
+            
+            user.setUsername(request.getParameter("username"));
+            user.setPassword(request.getParameter("password"));
+            user.setCluster(cluster);
+            
+            HttpSession session = request.getSession(true);
+            System.out.println("BEFORE LOGIN " + session);
+            
+            if(user.IsValidUser())
+            {
+                //Successful login
+                LoggedIn lg = new LoggedIn();
+                lg.setLogedin();
+                lg.setUsername(user.getUsername());
+                System.out.println("Successful login");
+                //request.setAttribute("LoggedIn", lg);
+                session.setAttribute("LoggedIn", lg);
+                System.out.println("LOGGED IN " + session);
+                System.out.println("Username: " + user.getUsername());
+
+                if(request.getParameter("remember") != null)
+                {
+                    user.setCookie(response); //Remember me
+                }
+                else
+                {
+                    //Remove any existing cookies if the user does not wish to be remembered
+                    user.removeCookie(request, response);
+                }
+
+                //Send the user to the correct profile if they came from someone else's profile
+                String sendTo = user.getUsername();
+                if(profile != null)
+                {
+                    sendTo = profile;
+                }
+
+                request.getRequestDispatcher("/Profile/" + sendTo).forward(request, response);
+            }
+            else
+            {
+                //Login failed
+                request.setAttribute("loginFailed", "1");
+                rememberMe(request);
+                request.getRequestDispatcher("index.jsp").forward(request, response);
+            }
         }
     }
 

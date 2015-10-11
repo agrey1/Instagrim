@@ -33,7 +33,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import static org.imgscalr.Scalr.*;
 import org.imgscalr.Scalr.Method;
@@ -47,9 +49,14 @@ public class PicModel
 {
     Cluster cluster;
     
-    public void PicModel() 
+    public PicModel() 
     {
-
+        
+    }
+    
+    public PicModel(Cluster cluster)
+    {
+        this.cluster = cluster;
     }
     
     public void setCluster(Cluster cluster) 
@@ -148,10 +155,10 @@ public class PicModel
         int height = img.getHeight();
         
         if(width > 600) width = 600;
-        else if(width < 100) width = 100;
+        else if(width < 250) width = 250;
         
         if(height > 750) height = 750;
-        else if(height < 100) height = 100;
+        else if(height < 250) height = 250;
         
         return resize(img, Method.SPEED, width, height, OP_ANTIALIAS, OP_GRAYSCALE);
     }
@@ -282,10 +289,10 @@ public class PicModel
     {
         Session session = cluster.connect("instagrim");
         
-        PreparedStatement psInsertPic = session.prepare("SELECT comments FROM pics WHERE picid = ?");
-        BoundStatement bsInsertPic = new BoundStatement(psInsertPic);
+        PreparedStatement psSelectComments = session.prepare("SELECT comments FROM pics WHERE picid = ?");
+        BoundStatement bsSelectComments = new BoundStatement(psSelectComments);
         
-        ResultSet result = session.execute(bsInsertPic.bind(picid));
+        ResultSet result = session.execute(bsSelectComments.bind(picid));
         session.close();
         
         LinkedList<PicComment> picComments = null;
@@ -310,5 +317,18 @@ public class PicModel
         }
         
         return picComments;
+    }
+    
+    public void addComment(java.util.UUID picid, PicComment comment)
+    {
+        Session session = cluster.connect("instagrim");
+        
+        String commentData = "{'" + comment.getAuthor() + "," + comment.getPostedStr() + "," + comment.getCommentText() + "'}";
+        
+        PreparedStatement psInsertPic = session.prepare("UPDATE pics SET comments = comments + " + commentData + " WHERE picid = ?");
+        BoundStatement bsInsertPic = new BoundStatement(psInsertPic);
+        
+        ResultSet result = session.execute(bsInsertPic.bind(picid));
+        session.close();
     }
 }

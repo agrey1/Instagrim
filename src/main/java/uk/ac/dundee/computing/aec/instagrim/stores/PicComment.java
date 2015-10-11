@@ -18,6 +18,7 @@ public class PicComment
     String commentText;
     Date posted; //Time that the comment was created
     final String dateFormat = "yyyy/MM/dd HH:mm:ss";
+    DateFormat format = new SimpleDateFormat(this.dateFormat);
     
     public PicComment(String author, String commentText)
     {
@@ -32,23 +33,20 @@ public class PicComment
      */
     public PicComment(String commentData)
     {
-        this.author = commentData.substring(0, commentData.indexOf(","));
-        commentData = commentData.substring(commentData.indexOf(","), commentData.length() - commentData.indexOf(","));
+        String[] parts = commentData.split(",", 3);
         
-        String dateStr = commentData.substring(0, commentData.indexOf(","));
-        DateFormat format = new SimpleDateFormat(this.dateFormat);
+        this.author = parts[0];
         
         try
         {
-            this.posted = format.parse(dateStr);
+            this.posted = format.parse(parts[1]);
         }
         catch(Exception e)
         {
             
         }
         
-        commentData = commentData.substring(commentData.indexOf(","), commentData.length() - commentData.indexOf(","));
-        this.commentText = commentData.substring(0, commentData.indexOf(","));
+        this.commentText = parts[2];
     }
     
     public String getAuthor()
@@ -59,6 +57,11 @@ public class PicComment
     public Date getPosted()
     {
         return this.posted;
+    }
+    
+    public String getPostedStr()
+    {
+        return format.format(this.posted);
     }
     
     public String getCommentText()

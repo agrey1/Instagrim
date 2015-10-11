@@ -4,6 +4,7 @@ Add confirm password field
 Password validation
 Security/access (Must be logged into upload, etc)
 Maximum image file size
+Comments HTML escape - prevent XSS
 
 Error/response codes
 404 Not found page
@@ -12,15 +13,7 @@ Duplicate code: error function
 Remove unused imports
 Do something if the database is down
 
-Added very basic CSS for the profile page.
-Profile page:
-	Removed image border.
-	Thumbnails now have a maximum and minimum size but are otherwise not resized.
-After uploading an image, the user is now redirected to their profile page.
-Image and Profile servlet separated.
-
-Image comments:
-	instagrim.pics table structure altered
-	Created PicComment store class
-	Implemented code to retrieve comments
-	Began working on JSP code to display comments
+Image comments are displayed on the profile pages.
+"Post comment" and "log in to post a comment" HTML added.
+After logging in from a user's profile, the visitor is sent back to that profile page.
+It is possible to post comments.

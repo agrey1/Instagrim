@@ -11,6 +11,7 @@
 
 String username = (String)request.getAttribute("username");
 String checked = "checked";
+String referrer = (String)(request.getAttribute("referrer"));
 
 if(username == null) 
 {
@@ -51,7 +52,7 @@ else
                 <img src="/Instagrim/images/tree.jpg" alt="tree"/>
                 <div id="loginContainer">
                     <h1>Instagrim</h1>
-                    <form action="/Instagrim" method="post">
+                    <form action="/Instagrim/<%=referrer%>" method="POST">
                         <p id="loginError" <%= loginFailed%>>Incorrect username or password, please try again.<br></p>
                         <label for="username">Username</label>
                         <input type="text" name="username" value="<%= username%>"/><br>
