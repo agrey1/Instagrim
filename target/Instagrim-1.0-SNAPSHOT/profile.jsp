@@ -57,6 +57,13 @@
                                 <p><a href="/Instagrim/<%=comment.getAuthor()%>"><%=comment.getAuthor()%></a> <%=comment.getCommentText()%></p>
                                 <%
                             }
+                            
+                            if(picComments.size() >= 5)
+                            {
+                                %>
+                                <p><a href="/Instagrim/Image/<%=p.getSUUID()%>/Comments">See more comments</a></p>
+                                <%
+                            }
                         }
                         %>
                         </div>

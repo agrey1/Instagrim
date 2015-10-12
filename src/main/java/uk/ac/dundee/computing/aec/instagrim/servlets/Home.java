@@ -85,15 +85,10 @@ public class Home extends HttpServlet
         }
         else
         {
-            HttpSession session = request.getSession(true);
-            LoggedIn lg = (LoggedIn)session.getAttribute("LoggedIn");
-            if (lg != null)
+            if (User.isLoggedIn(request) == true)
             {
-                if (lg.getlogedin())
-                {
-                    String username = lg.getUsername();
-                    request.getRequestDispatcher("/Profile/" + username).forward(request, response);
-                }
+                String username = ((LoggedIn)request.getSession().getAttribute("LoggedIn")).getUsername();
+                request.getRequestDispatcher("/Profile/" + username).forward(request, response);
             }
             else
             {
@@ -107,7 +102,7 @@ public class Home extends HttpServlet
                     String[] referrerParts = referrer.split("/");
                     referrer = referrerParts[referrerParts.length - 1];
                     
-                    if(referrer.equals("logout.jsp"))
+                    if(referrer.equals("logout.jsp") || referrer.equals("Register"))
                     {
                         referrer = "";
                     }
@@ -147,14 +142,13 @@ public class Home extends HttpServlet
             HttpSession session = request.getSession();
             LoggedIn lg = (LoggedIn)session.getAttribute("LoggedIn");
             
-            if(lg != null)
+            if(User.isLoggedIn(request) == true)
             {
-                if(lg.getlogedin() == true)
-                {
-                    PicComment comment = new PicComment(lg.getUsername(), commentText);
-                    PicModel picModel = new PicModel(cluster);
-                    picModel.addComment(java.util.UUID.fromString(request.getParameter("picid")), comment);
-                }
+                PicComment comment = new PicComment(lg.getUsername(), commentText);
+                PicModel picModel = new PicModel(cluster);
+                picModel.addComment(java.util.UUID.fromString(request.getParameter("picid")), comment);
+                
+                if(profile == null) profile = lg.getUsername();
             }
             
             request.getRequestDispatcher("/Profile/" + profile).forward(request, response);

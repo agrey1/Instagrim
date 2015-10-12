@@ -12,7 +12,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.HashMap;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -80,7 +84,38 @@ public class Image extends HttpServlet
         out.close();
     }
     
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    private void displayImageComments(String image, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    {
+        Pic picture = new Pic();
+        UUID uuid = UUID.fromString(image);
+        picture.setUUID(uuid);
+        
+        PicModel model = new PicModel(cluster);
+        String author = model.getPublisher(uuid);
+        
+        try
+        {
+            picture.setPicComments(model.getComments(uuid, 0));
+        }
+        catch (ParseException e)
+        {
+            
+        }
+        
+        HttpSession session = request.getSession();
+        LoggedIn lg = (LoggedIn)session.getAttribute("LoggedIn");
+        boolean loggedIn = false;
+        if(lg != null)
+        {
+            loggedIn = lg.getlogedin();
+        }
+        
+        request.setAttribute("loggedIn", loggedIn);
+        request.setAttribute("picture", picture);
+        request.setAttribute("author", author);
+        request.getRequestDispatcher("/comments.jsp").forward(request, response);
+    }
+    
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -115,7 +150,25 @@ public class Image extends HttpServlet
         {
             case 1:
             {
-                DisplayImage(Convertors.DISPLAY_PROCESSED, args[2], response);
+                if(args.length == 4)
+                {
+                    if(args[3].equals("Comments"))
+                    {
+                        //Display comments
+                        displayImageComments(args[2], request, response);
+                        System.out.println("#########################################################");
+                    }
+                    else
+                    {
+                        System.out.println("ALERT !!!!!!!!! [" + args[3] + "]");
+                        error("Bad Operator", response);
+                    }
+                }
+                else
+                {
+                    DisplayImage(Convertors.DISPLAY_PROCESSED, args[2], response);
+                }
+                
                 break;
             }
             case 2:

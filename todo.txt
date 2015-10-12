@@ -1,10 +1,10 @@
 Profile settings (name, avatar etc)
-Image comments/ratings/likes
 Add confirm password field
 Password validation
 Security/access (Must be logged into upload, etc)
 Maximum image file size
 Comments HTML escape - prevent XSS
+Comments length limit - JavaScript?
 
 Error/response codes
 404 Not found page
@@ -13,7 +13,9 @@ Duplicate code: error function
 Remove unused imports
 Do something if the database is down
 
-Image comments are displayed on the profile pages.
-"Post comment" and "log in to post a comment" HTML added.
-After logging in from a user's profile, the visitor is sent back to that profile page.
-It is possible to post comments.
+Code quality improvements (Re-use, readability, comments)
+Registration form now requires the password to be entered twice.
+The number of comments displayed per image on the profile pages is limited to 5.
+Comments are now ordered by time posted.
+Implemented /Instagrim/{image id}/Comments
+"See more comments" URL added to image comments area

@@ -49,6 +49,7 @@ else
                     <p id="loginError" <%= registerErrorShow%>><%= registerError%><br></p>
                     <li>User Name <input type="text" name="username"></li>
                     <li>Password <input type="password" name="password"></li>
+                    <li>Confirm Password <input type="password" name="password2"></li>
                 </ul>
                 <br/>
                 <input type="submit" value="Register"> 

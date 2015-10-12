@@ -21,6 +21,9 @@ import uk.ac.dundee.computing.aec.instagrim.lib.AeSimpleSHA1;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 import exceptions.InvalidUsernameException;
 import exceptions.UserExistsException;
+import exceptions.PasswordMismatchException;
+import javax.servlet.http.HttpSession;
+import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 /**
  *
@@ -58,6 +61,23 @@ public class User
         this.password = request.getParameter("password");
     }
     
+    /**
+     * Initialise a user from a request with double data entry (passwords)
+     * @param request The request to derive the information from.
+     * @param checkPasswords Both password fields will be checked when supplied
+     * @throws exceptions.PasswordMismatchException
+     */
+    public User(HttpServletRequest request, boolean checkPasswords) throws PasswordMismatchException
+    {
+        this.username = request.getParameter("username");
+        this.password = request.getParameter("password");
+        
+        if(request.getParameter("password2").equals(this.password) == false)
+        {
+            throw new PasswordMismatchException("The two passwords do not match.");
+        }
+    }
+    
     public void setUsername(String username)
     {
         this.username = username;
@@ -88,7 +108,7 @@ public class User
         {
             if(Character.isLetterOrDigit(username.charAt(i)) == false)
             {
-                throw new InvalidUsernameException("Your username must not contain any symbols.");
+                throw new InvalidUsernameException("Your username must not contain any symbols or spaces.");
             }
         }
         
@@ -240,6 +260,18 @@ public class User
         }
         
         return null;
+    }
+    
+    public static boolean isLoggedIn(HttpServletRequest request)
+    {
+        HttpSession session = request.getSession();
+        LoggedIn lg = (LoggedIn)session.getAttribute("LoggedIn");
+        if (lg != null)
+        {
+            return lg.getlogedin();
+        }
+        
+        return false;
     }
     
     public void setCluster(Cluster cluster) 

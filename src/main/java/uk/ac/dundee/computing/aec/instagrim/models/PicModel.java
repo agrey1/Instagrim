@@ -32,6 +32,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -45,7 +46,7 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 import uk.ac.dundee.computing.aec.instagrim.stores.PicComment;
 //import uk.ac.dundee.computing.aec.stores.TweetStore;
 
-public class PicModel 
+public class PicModel
 {
     Cluster cluster;
     
@@ -200,7 +201,7 @@ public class PicModel
                 
                 try
                 {
-                    pic.setPicComments(getComments(UUID)); 
+                    pic.setPicComments(getComments(UUID, 5)); 
                 }
                 catch(Exception e)
                 {
@@ -285,7 +286,32 @@ public class PicModel
         return p;
     }
     
-    public LinkedList<PicComment> getComments(java.util.UUID picid) throws ParseException
+    public String getPublisher(java.util.UUID picid)
+    {
+        Session session = cluster.connect("instagrim");
+        
+        PreparedStatement psSelectUser = session.prepare("SELECT user FROM pics WHERE picid = ?");
+        BoundStatement bsSelectUser = new BoundStatement(psSelectUser);
+        
+        ResultSet result = session.execute(bsSelectUser.bind(picid));
+        session.close();
+        
+        if(result.isExhausted() == false)
+        {
+            return result.one().getString("user");
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Get a list of comments belonging to the specified picture, ordered by time posted
+     * @param picid The picture whose comments we wish to retrieve
+     * @param limit Retrieve no more than this amount of comments. 0 for no limit.
+     * @return The list of PicComment objects
+     * @throws ParseException
+     */
+    public LinkedList<PicComment> getComments(java.util.UUID picid, int limit) throws ParseException
     {
         Session session = cluster.connect("instagrim");
         
@@ -314,6 +340,13 @@ public class PicModel
                     picComments.add(new PicComment(commentData));
                 }
             }
+            
+            Collections.sort(picComments);
+            
+            if(limit != 0)
+            {
+                picComments.subList(0, picComments.size() - 5).clear();
+            }
         }
         
         return picComments;
@@ -321,14 +354,13 @@ public class PicModel
     
     public void addComment(java.util.UUID picid, PicComment comment)
     {
-        Session session = cluster.connect("instagrim");
-        
-        String commentData = "{'" + comment.getAuthor() + "," + comment.getPostedStr() + "," + comment.getCommentText() + "'}";
-        
-        PreparedStatement psInsertPic = session.prepare("UPDATE pics SET comments = comments + " + commentData + " WHERE picid = ?");
-        BoundStatement bsInsertPic = new BoundStatement(psInsertPic);
-        
-        ResultSet result = session.execute(bsInsertPic.bind(picid));
-        session.close();
+        try (Session session = cluster.connect("instagrim")) {
+            String commentData = "{'" + comment.getAuthor() + "," + comment.getPostedStr() + "," + comment.getCommentText() + "'}";
+            
+            PreparedStatement psInsertPic = session.prepare("UPDATE pics SET comments = comments + " + commentData + " WHERE picid = ?");
+            BoundStatement bsInsertPic = new BoundStatement(psInsertPic);
+            
+            ResultSet result = session.execute(bsInsertPic.bind(picid));
+        }
     }
 }

@@ -60,11 +60,10 @@ public class Register extends HttpServlet
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {   
-        User user = new User(request);
-        user.setCluster(cluster);
-        
         try
         {
+            User user = new User(request, true);
+            user.setCluster(cluster);
             user.RegisterUser();
             response.sendRedirect("/Instagrim");
         }

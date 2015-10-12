@@ -12,7 +12,7 @@ import java.util.Date;
  *
  * @author Alexander Grey
  */
-public class PicComment
+public class PicComment implements Comparable<PicComment>
 {
     String author;
     String commentText;
@@ -67,5 +67,14 @@ public class PicComment
     public String getCommentText()
     {
         return this.commentText;
+    }
+    
+    @Override
+    /**
+     * Compare this comment with another comment based upon the number of seconds between their posted dates
+     */
+    public int compareTo(PicComment picComment) 
+    {
+        return ((int)(this.posted.getTime() / 1000)) - ((int)(picComment.getPosted().getTime() / 1000));
     }
 }
