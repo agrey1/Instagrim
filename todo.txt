@@ -1,9 +1,4 @@
 Profile settings (name, avatar etc)
-Add confirm password field
-Password validation
-Security/access (Must be logged into upload, etc)
-Maximum image file size
-Comments HTML escape - prevent XSS
 Comments length limit - JavaScript?
 
 Error/response codes
@@ -12,10 +7,9 @@ Exception handling
 Duplicate code: error function
 Remove unused imports
 Do something if the database is down
+Upload page design
 
-Code quality improvements (Re-use, readability, comments)
-Registration form now requires the password to be entered twice.
-The number of comments displayed per image on the profile pages is limited to 5.
-Comments are now ordered by time posted.
-Implemented /Instagrim/{image id}/Comments
-"See more comments" URL added to image comments area
+Password validation.
+Users must be logged in to upload an image.
+Profile edit URL and log out now displayed correctly.
+Picture author and date posted added.

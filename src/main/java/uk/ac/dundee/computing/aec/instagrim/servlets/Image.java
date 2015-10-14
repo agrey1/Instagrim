@@ -15,8 +15,6 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -201,32 +199,36 @@ public class Image extends HttpServlet
         if (lg.getlogedin())
         {
             username = lg.getUsername();
-        }
-        
-        //Uploading an image
-        for (Part part : request.getParts()) 
-        {
-            System.out.println("Part Name " + part.getName());
-
-            String type = part.getContentType();
-            String filename = part.getSubmittedFileName();
-
-            InputStream is = request.getPart(part.getName()).getInputStream();
-            int i = is.available();
-
-            if (i > 0) 
+            
+            //Uploading an image
+            for (Part part : request.getParts()) 
             {
-                byte[] b = new byte[i + 1];
-                is.read(b);
-                System.out.println("Length : " + b.length);
-                PicModel tm = new PicModel();
-                tm.setCluster(cluster);
-                tm.insertPic(b, type, filename, username);
+                System.out.println("Part Name " + part.getName());
 
-                is.close();
+                String type = part.getContentType();
+                String filename = part.getSubmittedFileName();
+
+                InputStream is = request.getPart(part.getName()).getInputStream();
+                int i = is.available();
+
+                if (i > 0) 
+                {
+                    byte[] b = new byte[i + 1];
+                    is.read(b);
+                    System.out.println("Length : " + b.length);
+                    PicModel tm = new PicModel();
+                    tm.setCluster(cluster);
+                    tm.insertPic(b, type, filename, username);
+
+                    is.close();
+                }
+
+                response.sendRedirect("/Instagrim");
             }
-
-            response.sendRedirect("/Instagrim");
+        }
+        else
+        {
+            error("You must be logged into upload an image.", response);
         }
     }
     

@@ -7,6 +7,9 @@ package uk.ac.dundee.computing.aec.instagrim.stores;
 
 import com.datastax.driver.core.utils.Bytes;
 import java.nio.ByteBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 
 /**
@@ -20,6 +23,7 @@ public class Pic
     private String type;
     private java.util.UUID UUID = null;
     private LinkedList<PicComment> picComments = null;
+    Date posted = null;
     
     public void Pic() 
     {
@@ -68,6 +72,19 @@ public class Pic
         return type;
     }
 
+    public void setDatePosted(Date datePosted)
+    {
+        this.posted = datePosted;
+    }
+    
+    public String getDatePostedStr()
+    {
+        final String dateFormat = "HH:mm MM/dd/yyyy";
+        DateFormat df = new SimpleDateFormat(dateFormat);
+
+        return df.format(this.posted);
+    }
+    
     public byte[] getBytes() 
     {
         byte image[] = Bytes.getArray(bImage);

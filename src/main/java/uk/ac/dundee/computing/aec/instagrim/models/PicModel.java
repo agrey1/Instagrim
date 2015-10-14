@@ -18,25 +18,17 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.utils.Bytes;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 import javax.imageio.ImageIO;
 import static org.imgscalr.Scalr.*;
 import org.imgscalr.Scalr.Method;
@@ -179,7 +171,7 @@ public class PicModel
     {
         java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
         Session session = cluster.connect("instagrim");
-        PreparedStatement ps = session.prepare("select picid from userpiclist where user = ?");
+        PreparedStatement ps = session.prepare("select picid, pic_added from userpiclist where user = ?");
         ResultSet rs = null;
         BoundStatement boundStatement = new BoundStatement(ps);
         
@@ -198,6 +190,9 @@ public class PicModel
                 java.util.UUID UUID = row.getUUID("picid");
                 System.out.println("UUID" + UUID.toString());
                 pic.setUUID(UUID);
+                
+                Date postedAt = row.getDate("pic_added");
+                pic.setDatePosted(postedAt);
                 
                 try
                 {
@@ -251,19 +246,19 @@ public class PicModel
             } 
             else 
             {
-                for (Row row : rs) 
+                for (Row row : rs)
                 {
-                    if (image_type == Convertors.DISPLAY_IMAGE) 
+                    if (image_type == Convertors.DISPLAY_IMAGE)
                     {
                         bImage = row.getBytes("image");
                         length = row.getInt("imagelength");
-                    } 
-                    else if (image_type == Convertors.DISPLAY_THUMB) 
+                    }
+                    else if (image_type == Convertors.DISPLAY_THUMB)
                     {
                         bImage = row.getBytes("thumb");
                         length = row.getInt("thumblength");
-                    } 
-                    else if (image_type == Convertors.DISPLAY_PROCESSED) 
+                    }
+                    else if (image_type == Convertors.DISPLAY_PROCESSED)
                     {
                         bImage = row.getBytes("processed");
                         length = row.getInt("processedlength");
@@ -354,7 +349,8 @@ public class PicModel
     
     public void addComment(java.util.UUID picid, PicComment comment)
     {
-        try (Session session = cluster.connect("instagrim")) {
+        try (Session session = cluster.connect("instagrim")) 
+        {
             String commentData = "{'" + comment.getAuthor() + "," + comment.getPostedStr() + "," + comment.getCommentText() + "'}";
             
             PreparedStatement psInsertPic = session.prepare("UPDATE pics SET comments = comments + " + commentData + " WHERE picid = ?");

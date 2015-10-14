@@ -7,11 +7,7 @@
 package uk.ac.dundee.computing.aec.instagrim.servlets;
 
 import com.datastax.driver.core.Cluster;
-import exceptions.UserException;
-import exceptions.UserExistsException;
 import java.io.IOException;
-import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -67,7 +63,7 @@ public class Register extends HttpServlet
             user.RegisterUser();
             response.sendRedirect("/Instagrim");
         }
-        catch(UserException e)
+        catch(Exception e)
         {
             request.setAttribute("registerError", e.getMessage());
             request.getRequestDispatcher("register.jsp").forward(request, response);

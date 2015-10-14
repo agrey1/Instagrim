@@ -12,13 +12,13 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import exceptions.InvalidPasswordException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import uk.ac.dundee.computing.aec.instagrim.lib.AeSimpleSHA1;
-import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 import exceptions.InvalidUsernameException;
 import exceptions.UserExistsException;
 import exceptions.PasswordMismatchException;
@@ -115,10 +115,43 @@ public class User
         return true;
     }
     
-    public boolean RegisterUser() throws InvalidUsernameException, UserExistsException
+    /**
+     * Validates a username. Descriptive exceptions will be thrown if the name is invalid.
+     * 
+     * @param username The username to validate.
+     * @return True if the username is between 3 and 20 characters long and is alphanumeric. 
+     */
+    private boolean isPasswordValid(String password) throws InvalidPasswordException
     {
-        //Validate username
+        if(password.length() < 5) throw new InvalidPasswordException("Please choose a password at least five characters long.");
+        if(password.length() > 64) throw new InvalidPasswordException("Please choose a password less than 64 characters long.");
+        
+        boolean[] found = {false, false};
+        for(int i = 0; i < password.length(); i++)
+        {
+            if(Character.isLetter(password.charAt(i)))
+            {
+                found[0] = true;
+            }
+            else if(Character.isDigit(password.charAt(i)))
+            {
+                found[1] = true; 
+            }
+        }
+        
+        if(found[0] == false || found[1] == false)
+        {
+            throw new InvalidPasswordException("Your password should contain a mix of letters and numbers.");
+        }
+        
+        return true;
+    }
+    
+    public boolean RegisterUser() throws InvalidUsernameException, UserExistsException, InvalidPasswordException
+    {
+        //Validate username and password
         isUsernameValid(this.username);
+        isPasswordValid(this.password);
         
         AeSimpleSHA1 sha1handler = new AeSimpleSHA1();
         String EncodedPassword = null;

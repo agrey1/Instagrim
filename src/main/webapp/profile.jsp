@@ -7,11 +7,24 @@
 <%@page import="java.util.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="uk.ac.dundee.computing.aec.instagrim.stores.*" %>
+
+<%
+    
+String profile = (String)request.getAttribute("profile");
+
+String username = (String)request.getAttribute("username");
+if(username == null)
+{
+    username = "Your Account";
+}
+    
+%>
+
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Instagrim</title>
+        <title>Instagrim - <%=profile%></title>
         <link rel="stylesheet" type="text/css" href="/Instagrim/css/profile.css" />
         <link rel="stylesheet" type="text/css" href="/Instagrim/css/footer.css" />
     </head>
@@ -23,8 +36,21 @@
                 <form>
                     <input type="text" placeholder="Search for users"/>
                 </form>
-                <a href="/Instagrim/edit">Account</a>
-                <a href="/Instagrim/LogOut">Log Out</a>
+                <%
+                if((boolean)request.getAttribute("loggedIn"))
+                {
+                    %>
+                    <a href="/Instagrim/Edit"><%=username%></a>
+                    <a href="/Instagrim/LogOut">Log Out</a>
+                    <%
+                }
+                else
+                {
+                    %>
+                    <a href="/Instagrim">Login</a>
+                    <%
+                }
+                %>
             </nav>
         </header>
         
@@ -32,7 +58,7 @@
         java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
         if (lsPics == null)
         {
-            %><p>No Pictures found</p><%
+            %><p>This user has not uploaded any images.</p><%
         }
         else
         {
@@ -45,6 +71,7 @@
                 %>
                 <article>
                     <div class="imageContainer">
+                        <p>Added by <a href="/Instagrim/<%=profile%>"><%=profile%></a> at <%=p.getDatePostedStr()%></p>
                         <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a>
                         <div class="comments">
                         <%

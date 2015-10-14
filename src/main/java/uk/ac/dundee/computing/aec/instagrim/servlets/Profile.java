@@ -1,27 +1,17 @@
 package uk.ac.dundee.computing.aec.instagrim.servlets;
 
 import com.datastax.driver.core.Cluster;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.fileupload.util.Streams;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
@@ -50,13 +40,13 @@ public class Profile extends HttpServlet
         super();
         CommandsMap.put("Profile", 1);
     }
-
+    
     public void init(ServletConfig config) throws ServletException 
     {
         // TODO Auto-generated method stub
         cluster = CassandraHosts.getCluster();
     }
-
+    
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
         // TODO Auto-generated method stub
@@ -66,8 +56,8 @@ public class Profile extends HttpServlet
         try
         {
             command = (Integer) CommandsMap.get(args[1]);
-        } 
-        catch (Exception et) 
+        }
+        catch (Exception et)
         {
             error("Bad Operator", response);
             return;
@@ -77,7 +67,15 @@ public class Profile extends HttpServlet
         {
             case 1:
             {
-                displayProfile(args[2], request, response);
+                if(args.length > 2 && args[2].equals("edit"))
+                {
+                    request.getRequestDispatcher("/settings.jsp").forward(request, response);
+                }
+                else
+                {
+                    displayProfile(args[2], request, response);
+                }
+                
                 break;
             }
             default:
@@ -87,11 +85,11 @@ public class Profile extends HttpServlet
         }
     }
     
-    private void displayProfile(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    private void displayProfile(String user, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
-        java.util.LinkedList<Pic> lsPics = tm.getPicsForUser(User);
+        java.util.LinkedList<Pic> lsPics = tm.getPicsForUser(user);
         RequestDispatcher rd = request.getRequestDispatcher("/profile.jsp");
         request.setAttribute("Pics", lsPics);
         
@@ -103,6 +101,8 @@ public class Profile extends HttpServlet
             loggedIn = lg.getlogedin();
         }
         
+        request.setAttribute("username", lg.getUsername());
+        request.setAttribute("profile", user);
         request.setAttribute("loggedIn", loggedIn);
         
         rd.forward(request, response);
@@ -124,12 +124,10 @@ public class Profile extends HttpServlet
     
     private void error(String mess, HttpServletResponse response) throws ServletException, IOException 
     {
-        PrintWriter out = null;
-        out = new PrintWriter(response.getOutputStream());
-        out.println("<h1>You have an error in your input</h1>");
-        out.println("<h2>" + mess + "</h2>");
-        out.close();
-        
-        return;
+        try (PrintWriter out = new PrintWriter(response.getOutputStream())) 
+        {
+            out.println("<h1>You have an error in your input</h1>");
+            out.println("<h2>" + mess + "</h2>");
+        }
     }
 }
