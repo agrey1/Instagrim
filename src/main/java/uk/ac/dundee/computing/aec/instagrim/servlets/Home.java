@@ -136,7 +136,10 @@ public class Home extends HttpServlet
             HttpSession session = request.getSession();
             LoggedIn lg = (LoggedIn)session.getAttribute("LoggedIn");
             
-            if(User.isLoggedIn(request) == true)
+            //Users must be logged in to post a comment.
+            //If the comment is more than 100 characters long, we ignore the request.
+            //This would indicate that the HTML element has been modified by the visitor.
+            if(User.isLoggedIn(request) == true && commentText.length() <= 100)
             {
                 PicComment comment = new PicComment(lg.getUsername(), commentText);
                 PicModel picModel = new PicModel(cluster);

@@ -24,9 +24,25 @@ if(username == null)
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Instagrim - <%=profile%></title>
+        <%
+        if(profile == null)
+        {
+            %>
+            <title>Instagrim</title>
+            <%
+        }
+        else
+        {
+            %>
+            <title>Instagrim - <%=profile%></title>
+            <%
+        }
+        %>
+        
         <link rel="stylesheet" type="text/css" href="/Instagrim/css/profile.css" />
         <link rel="stylesheet" type="text/css" href="/Instagrim/css/footer.css" />
+        <script type="text/javascript" src="js/jquery-2.1.4.js" ></script>
+        <script type="text/javascript" src="js/comments.js" ></script>
     </head>
     <body>
         <header>
@@ -55,8 +71,13 @@ if(username == null)
         </header>
         
         <%
+        
         java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
-        if (lsPics == null)
+        if(profile == null)
+        {
+            %><p>This account has not been registered.</p><%
+        }
+        else if (lsPics == null)
         {
             %><p>This user has not uploaded any images.</p><%
         }
@@ -100,7 +121,8 @@ if(username == null)
                             {
                                 %>
                                 <form method="POST">
-                                    <input type="text" name="comment" placeholder="Post a comment"/>
+                                    <span class="charCount"></span>
+                                    <input type="text" maxlength="100" name="comment" class="postComment" placeholder="Post a comment"/>
                                     <input type="hidden" name="picid" value="<%=p.getSUUID()%>"/>
                                     <input type="submit" value="Post"/>
                                 </form>

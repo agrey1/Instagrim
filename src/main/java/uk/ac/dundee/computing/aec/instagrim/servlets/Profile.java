@@ -1,6 +1,7 @@
 package uk.ac.dundee.computing.aec.instagrim.servlets;
 
 import com.datastax.driver.core.Cluster;
+import exceptions.UserNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -67,12 +68,19 @@ public class Profile extends HttpServlet
         {
             case 1:
             {
-                if(args.length > 2 && args[2].equals("edit"))
+                if(args.length == 3 && args[2].equals("edit"))
                 {
+                    //The user wishes to make changes to their profile.
                     request.getRequestDispatcher("/settings.jsp").forward(request, response);
+                }
+                else if(args.length > 3)
+                {
+                    //Page not found
+                    request.getRequestDispatcher("/404notfound.jsp").forward(request, response);
                 }
                 else
                 {
+                    //The user wishes to view a profile.
                     displayProfile(args[2], request, response);
                 }
                 
@@ -89,7 +97,18 @@ public class Profile extends HttpServlet
     {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
-        java.util.LinkedList<Pic> lsPics = tm.getPicsForUser(user);
+        
+        java.util.LinkedList<Pic> lsPics = null;
+        
+        try
+        {
+            lsPics = tm.getPicsForUser(user);
+        }
+        catch(UserNotFoundException e)
+        {
+            user = null;
+        }
+        
         RequestDispatcher rd = request.getRequestDispatcher("/profile.jsp");
         request.setAttribute("Pics", lsPics);
         
@@ -99,9 +118,9 @@ public class Profile extends HttpServlet
         if(lg != null)
         {
             loggedIn = lg.getlogedin();
+            request.setAttribute("username", lg.getUsername());
         }
         
-        request.setAttribute("username", lg.getUsername());
         request.setAttribute("profile", user);
         request.setAttribute("loggedIn", loggedIn);
         

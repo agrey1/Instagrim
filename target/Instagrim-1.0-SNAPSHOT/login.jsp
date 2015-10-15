@@ -20,7 +20,6 @@
         </header>
         <nav>
             <ul>
-                
                 <li><a href="/Instagrim/Images/majed">Sample Images</a></li>
             </ul>
         </nav>

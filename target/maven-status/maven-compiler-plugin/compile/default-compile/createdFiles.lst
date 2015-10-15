@@ -17,6 +17,7 @@ exceptions\PasswordMismatchException.class
 exceptions\UserException.class
 exceptions\InvalidUsernameException.class
 uk\ac\dundee\computing\aec\instagrim\lib\AeSimpleSHA1.class
+exceptions\UserNotFoundException.class
 uk\ac\dundee\computing\aec\instagrim\models\User.class
 exceptions\UserExistsException.class
 uk\ac\dundee\computing\aec\instagrim\lib\Keyspaces.class

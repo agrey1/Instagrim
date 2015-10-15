@@ -1,15 +1,10 @@
 Profile settings (name, avatar etc)
-Comments length limit - JavaScript?
 
 Error/response codes
-404 Not found page
 Exception handling
 Duplicate code: error function
-Remove unused imports
-Do something if the database is down
-Upload page design
 
-Password validation.
-Users must be logged in to upload an image.
-Profile edit URL and log out now displayed correctly.
-Picture author and date posted added.
+Added 500 error page. This will handle situations in which the database is unreachable.
+Added 404 Not Found page.
+Added profile not found message.
+Added maximum comment length restrictions (server side + JavaScript real time indicator)

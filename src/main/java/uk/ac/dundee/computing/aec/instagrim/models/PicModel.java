@@ -18,6 +18,7 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import exceptions.UserNotFoundException;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -166,16 +167,27 @@ public class PicModel
      * Gets a list of picture IDs for a given user
      * @param User The user whose pictures we wish to get
      * @return A LinkedList of picture IDs.
+     * @throws exceptions.UserNotFoundException
      */
-    public java.util.LinkedList<Pic> getPicsForUser(String User)
+    public java.util.LinkedList<Pic> getPicsForUser(String username) throws UserNotFoundException
     {
         java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
         Session session = cluster.connect("instagrim");
-        PreparedStatement ps = session.prepare("select picid, pic_added from userpiclist where user = ?");
-        ResultSet rs = null;
-        BoundStatement boundStatement = new BoundStatement(ps);
         
-        rs = session.execute(boundStatement.bind(User));
+        //Ensure that the user exists
+        PreparedStatement ps = session.prepare("SELECT login FROM userprofiles WHERE login = ?");
+        BoundStatement boundStatement = new BoundStatement(ps);
+        ResultSet result = session.execute(boundStatement.bind(username));
+        
+        if(result.isExhausted())
+        {
+            throw new UserNotFoundException(username + "has not registered an account.");
+        }
+        
+        ps = session.prepare("select picid, pic_added from userpiclist where user = ?");
+        boundStatement = new BoundStatement(ps);
+        
+        ResultSet rs = session.execute(boundStatement.bind(username));
         
         if (rs.isExhausted()) 
         {
