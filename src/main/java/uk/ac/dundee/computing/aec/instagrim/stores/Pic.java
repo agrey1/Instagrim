@@ -27,7 +27,7 @@ public class Pic
     
     public void Pic() 
     {
-
+        
     }
     
     public void setPicComments(LinkedList<PicComment> picComments)

@@ -22,6 +22,7 @@ import uk.ac.dundee.computing.aec.instagrim.lib.AeSimpleSHA1;
 import exceptions.InvalidUsernameException;
 import exceptions.UserExistsException;
 import exceptions.PasswordMismatchException;
+import java.util.LinkedList;
 import javax.servlet.http.HttpSession;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
@@ -305,6 +306,38 @@ public class User
         }
         
         return false;
+    }
+    
+    /**
+     * Search for a user by their username
+     * @param find The substring to find within a username
+     * @return A LinkedList of String objects containing any matches
+     */
+    public LinkedList<String> search(String find)
+    {
+        Session session = cluster.connect("instagrim");
+        
+        //Check for an existing user with this name
+        PreparedStatement ps = session.prepare("SELECT login FROM userprofiles;");
+        BoundStatement boundStatement = new BoundStatement(ps);
+        ResultSet result = session.execute(boundStatement.bind());
+        
+        LinkedList<String> users = new LinkedList<>();
+        
+        if(result.isExhausted() == false)
+        {
+            for (Row row : result)
+            {
+                String login = row.getString("login");
+                
+                if(login.contains(find))
+                {
+                    users.add(login);
+                }
+            }
+        }
+        
+        return users;
     }
     
     public void setCluster(Cluster cluster) 

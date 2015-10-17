@@ -49,14 +49,14 @@ if(username == null)
             <nav>
                 <a href="/Instagrim">Instagrim</a>
                 <a href="/Instagrim/upload.jsp">Upload</a>
-                <form>
-                    <input type="text" placeholder="Search for users"/>
+                <form action="/Instagrim/Search" method="POST">
+                    <input type="text" placeholder="Search for users" name="search"/>
                 </form>
                 <%
                 if((boolean)request.getAttribute("loggedIn"))
                 {
                     %>
-                    <a href="/Instagrim/Edit"><%=username%></a>
+                    <a href="/Instagrim/Settings">Settings</a>
                     <a href="/Instagrim/LogOut">Log Out</a>
                     <%
                 }
@@ -112,6 +112,12 @@ if(username == null)
                                 <p><a href="/Instagrim/Image/<%=p.getSUUID()%>/Comments">See more comments</a></p>
                                 <%
                             }
+                        }
+                        else
+                        {
+                            %>
+                            <p>No comments.</p>
+                            <%
                         }
                         %>
                         </div>

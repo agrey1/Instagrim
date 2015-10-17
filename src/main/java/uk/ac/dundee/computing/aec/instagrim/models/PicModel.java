@@ -350,7 +350,7 @@ public class PicModel
             
             Collections.sort(picComments);
             
-            if(limit != 0)
+            if(limit > 0 && picComments.size() >= limit)
             {
                 picComments.subList(0, picComments.size() - 5).clear();
             }

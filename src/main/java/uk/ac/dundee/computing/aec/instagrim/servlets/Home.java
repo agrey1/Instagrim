@@ -53,10 +53,6 @@ public class Home extends HttpServlet
     }
     
     /**
-     * Displays the user's profile when they are authenticated
-     */
-    
-    /**
      * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
@@ -79,7 +75,7 @@ public class Home extends HttpServlet
         }
         else
         {
-            if (User.isLoggedIn(request) == true)
+            if(User.isLoggedIn(request) == true)
             {
                 String username = ((LoggedIn)request.getSession().getAttribute("LoggedIn")).getUsername();
                 request.getRequestDispatcher("/Profile/" + username).forward(request, response);
@@ -96,7 +92,7 @@ public class Home extends HttpServlet
                     String[] referrerParts = referrer.split("/");
                     referrer = referrerParts[referrerParts.length - 1];
                     
-                    if(referrer.equals("logout.jsp") || referrer.equals("Register"))
+                    if(referrer.equals("logout.jsp") || referrer.equals("Register") || referrer.equals("Instagrim"))
                     {
                         referrer = "";
                     }
