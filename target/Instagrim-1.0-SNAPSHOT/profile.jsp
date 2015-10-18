@@ -17,7 +17,19 @@ if(username == null)
 {
     username = "Your Account";
 }
-    
+
+String profilePicture = null;
+profilePicture = (String)request.getAttribute("profilePicture");
+
+if(profilePicture != null)
+{
+    profilePicture = "<img class=\"profilePicture\" src=\"/Instagrim/Thumb/" + profilePicture + "\"/>";
+}
+else
+{
+    profilePicture = "";
+}
+
 %>
 
 <!DOCTYPE html>
@@ -92,6 +104,7 @@ if(username == null)
                 %>
                 <article>
                     <div class="imageContainer">
+                        <%=profilePicture%>
                         <p>Added by <a href="/Instagrim/<%=profile%>"><%=profile%></a> at <%=p.getDatePostedStr()%></p>
                         <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a>
                         <div class="comments">

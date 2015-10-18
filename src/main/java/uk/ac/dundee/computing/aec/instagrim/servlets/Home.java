@@ -31,7 +31,7 @@ public class Home extends HttpServlet
 {
     Cluster cluster = null;
     User user;
-
+    
     public void init(ServletConfig config) throws ServletException 
     {
         // TODO Auto-generated method stub
@@ -107,7 +107,7 @@ public class Home extends HttpServlet
             }
         }
     }
-
+    
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -168,7 +168,7 @@ public class Home extends HttpServlet
                 session.setAttribute("LoggedIn", lg);
                 System.out.println("LOGGED IN " + session);
                 System.out.println("Username: " + user.getUsername());
-
+                
                 if(request.getParameter("remember") != null)
                 {
                     user.setCookie(response); //Remember me

@@ -25,6 +25,7 @@ import uk.ac.dundee.computing.aec.instagrim.models.User;
 public class Search extends HttpServlet 
 {
     Cluster cluster = null;
+    @Override
     public void init(ServletConfig config) throws ServletException 
     {
         // TODO Auto-generated method stub

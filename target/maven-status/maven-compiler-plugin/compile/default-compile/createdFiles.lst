@@ -11,8 +11,10 @@ exceptions\InvalidUsernameException.class
 uk\ac\dundee\computing\aec\instagrim\lib\AeSimpleSHA1.class
 exceptions\UserNotFoundException.class
 uk\ac\dundee\computing\aec\instagrim\models\User.class
+exceptions\InvalidImageException.class
 uk\ac\dundee\computing\aec\instagrim\servlets\Home.class
 uk\ac\dundee\computing\aec\instagrim\lib\Convertors.class
+uk\ac\dundee\computing\aec\instagrim\servlets\DeleteAccount.class
 uk\ac\dundee\computing\aec\instagrim\stores\Pic.class
 uk\ac\dundee\computing\aec\instagrim\servlets\Register.class
 uk\ac\dundee\computing\aec\instagrim\servlets\Image.class

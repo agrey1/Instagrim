@@ -29,3 +29,9 @@ a:hover
     color: #3DC3F7;
     text-decoration: underline;
 }
+
+.error
+{
+    color: #FF1010;
+    display: none;
+}

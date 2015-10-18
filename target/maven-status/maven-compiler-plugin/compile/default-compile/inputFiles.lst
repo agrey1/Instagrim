@@ -4,6 +4,7 @@ E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\uk\ac\dundee\computing\aec\instagrim\models\User.java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\exceptions\PasswordMismatchException.java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\uk\ac\dundee\computing\aec\instagrim\servlets\Settings.java
+E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\uk\ac\dundee\computing\aec\instagrim\servlets\DeleteAccount.java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\exceptions\PasswordException.java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\uk\ac\dundee\computing\aec\instagrim\stores\PicComment.java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\exceptions\InvalidPasswordException.java
@@ -20,6 +21,7 @@ E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\uk\ac\dundee\computing\aec\instagrim\servlets\Image.java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\uk\ac\dundee\computing\aec\instagrim\servlets\Login.java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\uk\ac\dundee\computing\aec\instagrim\lib\Convertors.java
+E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\exceptions\InvalidImageException.java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\uk\ac\dundee\computing\aec\instagrim\servlets\Register.java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\exceptions\InvalidUsernameException.java
 E:\Dropbox\University\Secure Internet Programming\latest\Instagrim\src\main\java\uk\ac\dundee\computing\aec\instagrim\lib\Keyspaces.java

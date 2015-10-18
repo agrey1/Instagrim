@@ -1,14 +1,3 @@
-Profile settings (name, avatar etc)
-
-Error/response codes
-Exception handling
-Duplicate code: error function
-
-Added 500 error page. This will handle situations in which the database is unreachable.
-Added 404 Not Found page.
-Added profile not found message.
-Added maximum comment length restrictions (server side + JavaScript real time indicator)
-
-Added user search functionality.
-Added profile settings JSP and servlet.
-Resolved a bug which prevented comments from being displayed when there were less than 5.
+Profile settings page implemented: it is possible to set your profile picture/avatar.
+Added HTML "required" attribute to registration form fields.
+It is now possible for users to delete their account.

@@ -41,9 +41,9 @@ else
             <form method="POST"  action="Register">
                 <ul>
                     <p id="loginError" <%= registerErrorShow%>><%= registerError%><br></p>
-                    <li>User Name <input type="text" name="username"></li>
-                    <li>Password <input type="password" name="password"></li>
-                    <li>Confirm Password <input type="password" name="password2"></li>
+                    <li>User Name <input type="text" name="username" required></li>
+                    <li>Password <input type="password" name="password" required></li>
+                    <li>Confirm Password <input type="password" name="password2" required></li>
                 </ul>
                 <br/>
                 <input type="submit" value="Register"> 

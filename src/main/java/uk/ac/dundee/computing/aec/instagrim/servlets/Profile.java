@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
+import uk.ac.dundee.computing.aec.instagrim.models.User;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 
@@ -119,6 +120,20 @@ public class Profile extends HttpServlet
         {
             loggedIn = lg.getlogedin();
             request.setAttribute("username", lg.getUsername());
+        }
+        
+        if(user != null)
+        {
+            User u = new User();
+            u.setCluster(cluster);
+            u.setUsername(user);
+            
+            java.util.UUID profilePicture = u.getProfilePicture();
+            
+            if(profilePicture != null)
+            {
+                request.setAttribute("profilePicture", profilePicture.toString());
+            }
         }
         
         request.setAttribute("profile", user);

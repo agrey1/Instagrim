@@ -53,7 +53,7 @@ else
                 <div id="loginContainer">
                     <h1>Instagrim</h1>
                     <form action="/Instagrim/<%=referrer%>" method="POST">
-                        <p id="loginError" <%= loginFailed%>>Incorrect username or password, please try again.<br></p>
+                        <p class="error" <%= loginFailed%>>Incorrect username or password, please try again.<br></p>
                         <label for="username">Username</label>
                         <input type="text" name="username" value="<%= username%>"/><br>
                         

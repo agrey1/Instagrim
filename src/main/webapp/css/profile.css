@@ -56,3 +56,10 @@ article
 {
     display:inline-block;
 }
+
+.profilePicture
+{
+    max-height:40px;
+    max-width:60px;
+    float:left;
+}

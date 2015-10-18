@@ -46,9 +46,3 @@ body
     
     background-color: #484848;
 }
-
-#loginError
-{
-    color: #FF1010;
-    display:none;
-}

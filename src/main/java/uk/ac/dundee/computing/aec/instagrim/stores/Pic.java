@@ -79,7 +79,7 @@ public class Pic
     
     public String getDatePostedStr()
     {
-        final String dateFormat = "HH:mm MM/dd/yyyy";
+        final String dateFormat = "HH:mm dd/MM/yyyy";
         DateFormat df = new SimpleDateFormat(dateFormat);
 
         return df.format(this.posted);

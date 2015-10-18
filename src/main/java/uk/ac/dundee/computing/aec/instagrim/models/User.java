@@ -12,6 +12,7 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import exceptions.InvalidImageException;
 import exceptions.InvalidPasswordException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -77,6 +78,18 @@ public class User
         {
             throw new PasswordMismatchException("The two passwords do not match.");
         }
+    }
+    
+    public static boolean isLoggedIn(HttpServletRequest request)
+    {
+        HttpSession session = request.getSession();
+        LoggedIn lg = (LoggedIn)session.getAttribute("LoggedIn");
+        if (lg != null)
+        {
+            return lg.getlogedin();
+        }
+        
+        return false;
     }
     
     public void setUsername(String username)
@@ -296,18 +309,6 @@ public class User
         return null;
     }
     
-    public static boolean isLoggedIn(HttpServletRequest request)
-    {
-        HttpSession session = request.getSession();
-        LoggedIn lg = (LoggedIn)session.getAttribute("LoggedIn");
-        if (lg != null)
-        {
-            return lg.getlogedin();
-        }
-        
-        return false;
-    }
-    
     /**
      * Search for a user by their username
      * @param find The substring to find within a username
@@ -338,6 +339,127 @@ public class User
         }
         
         return users;
+    }
+    
+    public void setFirstName(String firstName)
+    {
+        Session session = cluster.connect("instagrim");
+        
+        PreparedStatement ps = session.prepare("UPDATE userprofiles SET first_name = ? WHERE login = ?;");
+        BoundStatement boundStatement = new BoundStatement(ps);
+        session.execute(boundStatement.bind(firstName, this.username));
+    }
+    
+    public void setLastName(String lastName)
+    {
+        Session session = cluster.connect("instagrim");
+        
+        PreparedStatement ps = session.prepare("UPDATE userprofiles SET last_name = ? WHERE login = ?;");
+        BoundStatement boundStatement = new BoundStatement(ps);
+        session.execute(boundStatement.bind(lastName, this.username));
+    }
+    
+    public void setProfilePicture(java.util.UUID picid) throws InvalidImageException
+    {
+        Session session = cluster.connect("instagrim");
+        
+        //Check that the specified picture exists
+        PreparedStatement ps = session.prepare("SELECT picid FROM pics WHERE picid = ?;");
+        BoundStatement boundStatement = new BoundStatement(ps);
+        ResultSet result = session.execute(boundStatement.bind(picid));
+        
+        if(result.isExhausted())
+        {
+            throw new InvalidImageException("The specified image does not exist.");
+        }
+        
+        ps = session.prepare("UPDATE userprofiles SET profile_picture = ? WHERE login = ?;");
+        boundStatement = new BoundStatement(ps);
+        session.execute(boundStatement.bind(picid, this.username));
+    }
+    
+    public String getFirstName()
+    {
+        Session session = cluster.connect("instagrim");
+        
+        String firstName = null;
+        
+        PreparedStatement ps = session.prepare("SELECT first_name FROM userprofiles WHERE login = ?;");
+        BoundStatement boundStatement = new BoundStatement(ps);
+        ResultSet result = session.execute(boundStatement.bind(this.username));
+        
+        if(result.isExhausted() == false)
+        {
+            firstName = result.one().getString("first_name");
+        }
+        
+        return firstName;
+    }
+    
+    public String getLastName()
+    {
+        Session session = cluster.connect("instagrim");
+        
+        String lastName = null;
+        
+        PreparedStatement ps = session.prepare("SELECT last_name FROM userprofiles WHERE login = ?;");
+        BoundStatement boundStatement = new BoundStatement(ps);
+        ResultSet result = session.execute(boundStatement.bind(this.username));
+        
+        if(result.isExhausted() == false)
+        {
+            lastName = result.one().getString("last_name");
+        }
+        
+        return lastName;
+    }
+    
+    public java.util.UUID getProfilePicture()
+    {
+        Session session = cluster.connect("instagrim");
+        
+        java.util.UUID picid = null;
+        
+        PreparedStatement ps = session.prepare("SELECT profile_picture FROM userprofiles WHERE login = ?;");
+        BoundStatement boundStatement = new BoundStatement(ps);
+        ResultSet result = session.execute(boundStatement.bind(this.username));
+        
+        if(result.isExhausted() == false)
+        {
+            picid = result.one().getUUID("profile_picture");
+        }
+        
+        return picid;
+    }
+    
+    public void delete()
+    {
+        Session session = cluster.connect("instagrim");
+        
+        //Delete user
+        PreparedStatement ps = session.prepare("DELETE FROM userprofiles WHERE login = ?;");
+        BoundStatement boundStatement = new BoundStatement(ps);
+        session.execute(boundStatement.bind(this.username));
+        
+        //Delete the user's pictures
+        ps = session.prepare("SELECT picid FROM userpiclist WHERE user = ?;");
+        boundStatement = new BoundStatement(ps);
+        ResultSet result = session.execute(boundStatement.bind(this.username));
+        
+        if(result.isExhausted() == false)
+        {
+            for(Row row : result)
+            {
+                ps = session.prepare("DELETE FROM pics WHERE picid = ?;");
+                boundStatement = new BoundStatement(ps);
+                session.execute(boundStatement.bind(row.getUUID("picid")));
+            }
+        }
+        
+        //Delete the user's list of pictures
+        ps = session.prepare("DELETE FROM userpiclist WHERE user = ?;");
+        boundStatement = new BoundStatement(ps);
+        session.execute(boundStatement.bind(this.username));
     }
     
     public void setCluster(Cluster cluster) 
