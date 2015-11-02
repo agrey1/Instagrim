@@ -30,7 +30,7 @@ Users can choose which image should be used as their profile picture/avatar.
 The following URL patterns are now implemented:
 /Instagrim - Home page/login page, will display your profile if you are logged in
 /Instagrim/{username} - View the given user's profile (list of pictures with comments etc)
-/Instagrim/Profile/{username} - Same as above but not references by URL
+/Instagrim/Profile/{username} - Same as above but not referenced by URL
 /Instagrim/Image/{imageid} - Gets the full sized image
 /Instagirm/Image/{imageid}/Comments - View all comments for an image
 /Instagrim/Thumb/{imageid} - Gets the thumbnail/preview of an image
